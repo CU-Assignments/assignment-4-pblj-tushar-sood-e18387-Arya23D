@@ -1,0 +1,67 @@
+import java.util.*;
+
+public class CardCollection {
+    private static Map<String, List<Card>> cardMap = new HashMap<>();
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        addCard(new Card("Hearts", "Ace"));
+        addCard(new Card("Hearts", "King"));
+        addCard(new Card("Spades", "Ace"));
+        addCard(new Card("Spades", "Queen"));
+        addCard(new Card("Diamonds", "10"));
+        addCard(new Card("Clubs", "Jack"));
+
+        while (true) {
+            System.out.println("\nCard Collection System");
+            System.out.println("1. Add a Card");
+            System.out.println("2. Find Cards by Symbol");
+            System.out.println("3. Exit");
+            System.out.print("Enter your choice: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine(); 
+            switch (choice) {
+                case 1:
+                    addCardFromUser(scanner);
+                    break;
+                case 2:
+                    findCardsBySymbol(scanner);
+                    break;
+                case 3:
+                    System.out.println("Exiting the system. Goodbye!");
+                    System.exit(0);
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        }
+    }
+    private static void addCard(Card card) {
+        String symbol = card.getSymbol();
+        cardMap.computeIfAbsent(symbol, k -> new ArrayList<>()).add(card);
+    }
+    private static void addCardFromUser(Scanner scanner) {
+        System.out.print("Enter the card symbol (e.g., Hearts, Spades): ");
+        String symbol = scanner.nextLine();
+
+        System.out.print("Enter the card value (e.g., Ace, King, 10): ");
+        String value = scanner.nextLine();
+
+        Card card = new Card(symbol, value);
+        addCard(card);
+        System.out.println("Card added successfully!");
+    }
+    private static void findCardsBySymbol(Scanner scanner) {
+        System.out.print("Enter the symbol to search (e.g., Hearts, Spades): ");
+        String symbol = scanner.nextLine();
+
+        List<Card> cards = cardMap.get(symbol);
+        if (cards == null || cards.isEmpty()) {
+            System.out.println("No cards found for symbol: " + symbol);
+        } else {
+            System.out.println("Cards with symbol " + symbol + ":");
+            for (Card card : cards) {
+                System.out.println(card);
+            }
+        }
+    }
+}
