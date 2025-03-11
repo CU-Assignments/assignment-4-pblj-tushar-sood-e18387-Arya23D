@@ -1,0 +1,67 @@
+import java.util.HashSet;
+import java.util.Scanner;
+import java.util.Set;
+
+class TicketBookingSystem {
+    private static final int TOTAL_SEATS = 10;
+    private static Set<Integer> bookedSeats = new HashSet<>();
+    private static final Object lock = new Object();
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Welcome to the Ticket Booking System!");
+        System.out.println("Total seats available: " + TOTAL_SEATS);
+
+        
+        Thread vipThread1 = new Thread(() -> bookTicket(true), "VIP-1");
+        Thread vipThread2 = new Thread(() -> bookTicket(true), "VIP-2");
+        Thread regularThread1 = new Thread(() -> bookTicket(false), "Regular-1");
+        Thread regularThread2 = new Thread(() -> bookTicket(false), "Regular-2");
+
+        
+        vipThread1.setPriority(Thread.MAX_PRIORITY);
+        vipThread2.setPriority(Thread.MAX_PRIORITY);
+        regularThread1.setPriority(Thread.NORM_PRIORITY);
+        regularThread2.setPriority(Thread.NORM_PRIORITY);
+
+        
+        vipThread1.start();
+        vipThread2.start();
+        regularThread1.start();
+        regularThread2.start();
+
+        
+        try {
+            vipThread1.join();
+            vipThread2.join();
+            regularThread1.join();
+            regularThread2.join();
+        } catch (InterruptedException e) {
+            System.out.println("Main thread interrupted.");
+        }
+
+        System.out.println("All bookings processed. Final booked seats: " + bookedSeats);
+    }
+
+    private static void bookTicket(boolean isVip) {
+        String threadName = Thread.currentThread().getName();
+        System.out.println(threadName + " is trying to book a ticket.");
+
+        synchronized (lock) {
+            for (int seat = 1; seat <= TOTAL_SEATS; seat++) {
+                if (!bookedSeats.contains(seat)) {
+                    
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        System.out.println(threadName + " was interrupted.");
+                    }
+                    bookedSeats.add(seat);
+                    System.out.println(threadName + " booked seat: " + seat);
+                    break;
+                }
+            }
+        }
+    }
+}
